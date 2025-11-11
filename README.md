@@ -1,3 +1,6 @@
+![Screenshot](Screenshot.png)
+
+
 # 🧠 Engineering Toolkit
 
 Interaktive technische Rechner für Studium und Praxis – 
@@ -25,3 +28,4 @@ Hochschule Darmstadt – Fachrichtung Maschinenbau
 ## ⚠️ Hinweis
 Dieses Tool dient der **Lehre und Vordimensionierung**.  
 Es ersetzt keine vollständigen Norm- oder Festigkeitsnachweise.
+
