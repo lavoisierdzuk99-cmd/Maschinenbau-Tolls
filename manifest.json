@@ -1,7 +1,9 @@
 {
   "name": "Engineering Toolkit",
   "short_name": "EngKit",
-  "start_url": "./index.html",
+  "description": "Interaktive technische Rechner für Maschinenbau und Elektrotechnik mit sichtbaren Formeln.",
+  "start_url": "/Maschinenbau-Tolls/",
+  "scope": "/Maschinenbau-Tolls/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#38bdf8",
