@@ -1,19 +1,309 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test OK</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Engineering Toolkit</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#38bdf8">
   <style>
-    body{font-family:system-ui,Arial,sans-serif;background:#0b1222;color:#e5e7eb;
-         display:grid;place-items:center;height:100vh;margin:0}
-    .box{padding:24px 28px;border:1px solid #3b82f6;border-radius:16px}
+    :root{--bg:#020817;--text:#e5e7eb;--muted:#9ca3af;--accent:#38bdf8;--ok:#22c55e;--warn:#f97316;--radius:16px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:clamp(15px,2.2vw,18px);line-height:1.45}
+    header{position:sticky;top:0;z-index:10;padding:14px 18px;border-bottom:1px solid rgba(148,163,253,.12);background:rgba(2,6,23,.96);backdrop-filter:blur(8px)}
+    .hero{display:flex;align-items:center;gap:12px}
+    .logo{height:40px;width:40px;border-radius:10px;background:linear-gradient(135deg,#38bdf8,#6366f1)}
+    h1{margin:0;font-size:clamp(18px,4.5vw,24px)}
+    .sub{color:var(--muted);font-size:.92em;margin-top:2px}
+    .shell{max-width:1100px;margin:10px auto 24px;padding:0 12px}
+    nav{display:flex;gap:8px;overflow:auto;padding:8px;border-radius:999px;border:1px solid rgba(148,163,253,.16);background:#0b1222}
+    nav button{flex:0 0 auto;padding:10px 14px;border-radius:999px;border:1px solid rgba(148,163,253,.12);background:#0b1222;color:var(--muted);cursor:pointer;font-size:.95em}
+    nav button.active,nav button:hover{color:#fff;border-color:rgba(99,102,241,.6);background:linear-gradient(90deg,rgba(56,189,248,.2),rgba(99,102,241,.24))}
+    .card{margin-top:12px;padding:16px;border-radius:16px;background:#0a0f1d;border:1px solid rgba(75,85,99,.55)}
+    h3{margin:0 0 6px 0;font-size:1.1em}
+    .hint{color:var(--muted);font-size:.95em;margin-bottom:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    label{display:block;color:var(--muted);font-size:.9em;margin-bottom:4px}
+    input,select{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(75,85,99,.9);background:#0b0f1d;color:var(--text);font-size:1em;min-height:44px}
+    input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(56,189,248,.25)}
+    .btn{margin-top:8px;padding:12px 18px;border-radius:999px;border:none;cursor:pointer;font-weight:650;background:linear-gradient(90deg,#38bdf8,#6366f1);color:#07101f;min-height:48px;font-size:1em}
+    .result{margin-top:12px;padding:12px;border-radius:12px;border:1px solid rgba(75,85,99,.8);background:#0a0f1d;font-size:.98em}
+    .ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}
+    table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92em}
+    th,td{border:1px solid rgba(75,85,99,.8);padding:6px 8px;white-space:nowrap}
+    th{background:#0b1222;color:var(--muted);font-weight:600}
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>GitHub Pages lädt ✅</h1>
-    <p>Wenn du das hier siehst, funktioniert die Auslieferung.</p>
+  <header>
+    <div class="hero">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Engineering Toolkit</h1>
+        <div class="sub">Interaktive Rechner – mobil optimiert • Formeln sichtbar</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav>
+      <button data-module="schraube" class="active">🔩 Schrauben</button>
+      <button data-module="balken">📐 Biegung & Torsion</button>
+      <button data-module="werkstoff">🧱 Werkstoffe</button>
+      <button data-module="welle">⚙️ Welle & Lager</button>
+      <button data-module="passung">🧷 ISO-Passung</button>
+      <button data-module="kosten">💰 Kosten</button>
+      <button data-module="waerme">🔥 Wärme</button>
+    </nav>
+    <div class="card"><div id="module-container">Lädt…</div></div>
   </div>
+
+  <script>
+  (function(){
+    const $ = id => document.getElementById(id);
+    const mount = html => (document.getElementById('module-container').innerHTML = html);
+
+    /* Daten */
+    const SCREW_AS={3:5.03,4:8.78,5:14.2,6:20.1,8:36.6,10:58.0,12:84.3,16:157,20:245,24:353};
+    const STRENGTH={"4.6":400,"5.8":500,"8.8":800,"10.9":1000,"12.9":1200};
+    const MATERIALS=[
+      {name:"S235JR",Rm:360,Re:235,rho:7850,E:210000,korrosion:"rostet",weld:"sehr gut",mach:"gut",apps:"Stahlbau",cost:1},
+      {name:"C45E",Rm:700,Re:430,rho:7850,E:210000,korrosion:"rostet",weld:"eingeschränkt",mach:"gut",apps:"Wellen/Bolzen",cost:2},
+      {name:"42CrMo4",Rm:900,Re:650,rho:7850,E:210000,korrosion:"rostet",weld:"bedingt",mach:"mittel",apps:"hochbelastete Teile",cost:3},
+      {name:"AlMg3",Rm:300,Re:200,rho:2700,E:70000,korrosion:"gut",weld:"gut",mach:"sehr gut",apps:"Leichtbau",cost:2},
+      {name:"1.4301",Rm:600,Re:230,rho:8000,E:200000,korrosion:"sehr gut",weld:"gut",mach:"zäh",apps:"Lebensmittel/Chemie",cost:4}
+    ];
+    function IT_um(D,grade){const i=0.45*Math.cbrt(D)+0.001*D;const K={5:7,6:10,7:16,8:25,9:40,10:64,11:100}[grade];return K?K*i:null;}
+    const HOLE_SHIFT={F:-1,G:-0.5,H:0,J:0.5,K:1,M:2,N:2.5,P:3,S:4,U:5};
+    const SHAFT_SHIFT={f:-1,g:-0.5,h:0,js:0,k:0.5,m:1,n:1.5,p:2.5,s:4,u:5};
+
+    /* Module */
+    function renderSchrauben(){
+      mount(`
+        <h3>🔩 Schraubenrechner</h3>
+        <div class="hint">Vorspannkraft aus Anziehdrehmoment (Lehr-Näherung).</div>
+        <div class="grid">
+          <div><label>Größe</label><select id="d_nom">${Object.keys(SCREW_AS).map(d=>`<option value="${d}">M${d}</option>`).join('')}</select></div>
+          <div><label>Festigkeitsklasse</label><select id="klasse">${Object.keys(STRENGTH).map(k=>`<option>${k}</option>`).join('')}</select></div>
+          <div><label>Anziehdrehmoment T [Nm]</label><input id="T" type="number" value="40"></div>
+          <div><label>Reibkennwert K</label><input id="K" type="number" value="0.20" step="0.01"></div>
+        </div>
+        <button class="btn" id="bolt-btn">Berechnen</button>
+        <div id="bolt-out" class="result"></div>
+      `);
+      $('bolt-btn').onclick = calcBolt;
+    }
+    function calcBolt(){
+      const d=+$('d_nom').value, T=+$('T').value, K=+$('K').value, Rm=STRENGTH[$('klasse').value]||800;
+      if(!(d>0&&T>=0&&K>0)) return $('bolt-out').innerHTML="Bitte gültige Werte.";
+      const As=SCREW_AS[d]||0.6*(Math.PI*d*d/4);
+      const Fv=(T*1000)/(K*d), Fzul=0.7*Rm*As, S=Fzul/Fv;
+      const state=S<1?`<span class="warn">⚠️ Überlast (S&lt;1)</span>`:S<1.5?`<span class="warn">⚠️ Hoch</span>`:`<span class="ok">✅ OK</span>`;
+      $('bolt-out').innerHTML=`As≈${As.toFixed(1)} mm²<br>Fv≈<b>${Fv.toFixed(0)} N</b> · Fzul≈<b>${Fzul.toFixed(0)} N</b><br>S≈<b>${S.toFixed(2)}</b> ${state}<br>
+      Formeln: Fv=T/(K·d), Fzul=0.7·Rm·As, S=Fzul/Fv`;
+    }
+
+    function renderBalken(){
+      mount(`
+        <h3>📐 Biegung &amp; Torsion</h3>
+        <div class="hint">Vollrund. Wähle Fall, optional Torsion → von Mises.</div>
+        <div class="grid">
+          <div><label>Fall</label>
+            <select id="bcase">
+              <option value="ss_point">Einfach gelagert · Einzellast Mitte</option>
+              <option value="ss_udl">Einfach gelagert · Gleichlast q</option>
+              <option value="cant_point">Kragarm · Endlast</option>
+              <option value="cant_udl">Kragarm · Gleichlast q</option>
+            </select>
+          </div>
+          <div><label>Länge L [m]</label><input id="L" type="number" value="1" step="0.1"></div>
+          <div><label id="loadlbl">F [N] (Einzellast)</label><input id="F" type="number" value="100" step="10"></div>
+          <div><label>Ø d [mm]</label><input id="d_b" type="number" value="20"></div>
+          <div><label>E [N/mm²]</label><input id="E" type="number" value="210000"></div>
+          <div><label>Torsion T [Nm] (opt.)</label><input id="Tt" type="number" value="0"></div>
+        </div>
+        <button class="btn" id="beam-btn">Berechnen</button>
+        <div id="beam-out" class="result"></div>
+      `);
+      $('bcase').onchange = ()=>{$('loadlbl').textContent = $('bcase').value.includes('udl')?'q [N/m] (Gleichlast)':'F [N] (Einzellast)';};
+      $('beam-btn').onclick = calcBeam;
+    }
+    function calcBeam(){
+      const Lm=+$('L').value, Fq=+$('F').value, dmm=+$('d_b').value, E=+$('E').value, Tnm=+$('Tt').value||0, c=$('bcase').value;
+      if([Lm,Fq,dmm,E].some(v=>!(v>0))) return $('beam-out').innerHTML="Bitte gültige Werte.";
+      const L= Lm*1000, I=Math.PI*dmm**4/64, Wb=Math.PI*dmm**3/32, Wt=Math.PI*dmm**3/16;
+      let M=0, f=0, txt="";
+      if(c==='ss_point'){M=Fq*L/4; f=Fq*L**3/(48*E*I); txt="Einfach gelagert, Einzellast Mitte";}
+      if(c==='ss_udl'){const q=Fq/1000; M=q*L*L/8; f=5*q*L**4/(384*E*I); txt="Einfach gelagert, Gleichlast";}
+      if(c==='cant_point'){M=Fq*L; f=Fq*L**3/(3*E*I); txt="Kragarm, Endlast";}
+      if(c==='cant_udl'){const q=Fq/1000; M=q*L*L/2; f=q*L**4/(8*E*I); txt="Kragarm, Gleichlast";}
+      const sig_b=M/Wb, tau=Tnm? (Tnm*1000)/Wt : 0, sig_v=Math.sqrt(sig_b**2+3*tau**2);
+      const rate=sig_v>250?`<span class="warn">⚠️ hoch</span>`:sig_v>150?`<span class="warn">⚠️ mittel</span>`:`<span class="ok">✅ niedrig</span>`;
+      $('beam-out').innerHTML=`${txt}<br>M_max≈${(M/1000).toFixed(2)} Nm · σ_b≈${sig_b.toFixed(1)} N/mm² · f≈${f.toFixed(2)} mm<br>`+
+        (tau?`τ_t≈${tau.toFixed(1)} N/mm² · σ_v≈${sig_v.toFixed(1)} N/mm² ${rate}<br>`:"")+
+        `Formeln: Wb=πd³/32, Wt=πd³/16, σ_b=M/Wb, τ=T/Wt, σ_v=√(σ_b²+3τ²)`;
+    }
+
+    function renderWerkstoff(){
+      const opts= MATERIALS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
+      mount(`
+        <h3>🧱 Werkstoffvergleich</h3><div class="hint">Kennwerte + Kurzkommentar (Lehrzwecke).</div>
+        <div class="grid">
+          <div><label>Werkstoff 1</label><select id="m1"><option value="">–</option>${opts}</select></div>
+          <div><label>Werkstoff 2</label><select id="m2"><option value="">–</option>${opts}</select></div>
+          <div><label>Werkstoff 3</label><select id="m3"><option value="">–</option>${opts}</select></div>
+        </div>
+        <button class="btn" id="mat-btn">Vergleichen</button>
+        <div id="mat-out" class="result"></div>
+      `);
+      $('mat-btn').onclick = cmpMat;
+    }
+    function cmpMat(){
+      const ids=[$('m1').value,$('m2').value,$('m3').value].filter(v=>v!=="");
+      if(!ids.length) return $('mat-out').innerHTML="Bitte mindestens einen Werkstoff wählen.";
+      let html=`<table><tr><th>Werkstoff</th><th>Rm</th><th>Re</th><th>ρ</th><th>E</th><th>Korrosion</th><th>Schweißen</th><th>Zerspanung</th><th>Apps</th><th>€</th></tr>`;
+      ids.forEach(v=>{const x=MATERIALS[+v];html+=`<tr><td>${x.name}</td><td>${x.Rm}</td><td>${x.Re}</td><td>${x.rho}</td><td>${x.E}</td><td>${x.korrosion}</td><td>${x.weld}</td><td>${x.mach}</td><td>${x.apps}</td><td>${x.cost}</td></tr>`});
+      html+=`</table><br><span class="hint">Richtwerte – für Auslegung bitte Datenblätter/Normen nutzen.</span>`;
+      $('mat-out').innerHTML=html;
+    }
+
+    function renderWelle(){
+      mount(`
+        <h3>⚙️ Welle &amp; Lager</h3>
+        <div class="hint">Vollwelle, Torsion + optional Biegemoment → von Mises.</div>
+        <div class="grid">
+          <div><label>Drehmoment T [Nm]</label><input id="Tw" type="number" value="200"></div>
+          <div><label>Radialkraft F<sub>t</sub> [N] (opt.)</label><input id="Fz" type="number" value="0"></div>
+          <div><label>Hebelarm a [m] (opt.)</label><input id="az" type="number" value="0.2" step="0.01"></div>
+          <div><label>σ<sub>v,zul</sub> [N/mm²]</label><input id="sv" type="number" value="120"></div>
+        </div>
+        <button class="btn" id="shaft-btn">Berechnen</button>
+        <div id="shaft-out" class="result"></div>
+      `);
+      $('shaft-btn').onclick = calcShaft;
+    }
+    function calcShaft(){
+      const T=+$('Tw').value, F=+$('Fz').value||0, a=+$('az').value||0, zul=+$('sv').value;
+      if(!(T>0&&zul>0)) return $('shaft-out').innerHTML="Bitte sinnvolle Werte.";
+      const Tmm=T*1000, Mb=(F>0&&a>0)?F*a*1000:0;
+      const C=Math.sqrt((32*Mb/Math.PI)**2+3*(16*Tmm/Math.PI)**2);
+      const d_req=Math.cbrt(C/zul);
+      const prefs=[15,17,20,25,30,35,40,45,50,55,60]; let d_emp=prefs.find(p=>d_req<=p)||Math.ceil(d_req/5)*5;
+      const lager=d=>d<=20?"6204/6205":d<=25?"6205":d<=30?"6206":d<=35?"6207":d<=40?"6208":d<=50?"6210":"DIN-Reihe wählen";
+      const rate=d_req/d_emp<0.6?`<span class="ok">✅ sicher</span>`:d_req/d_emp<0.9?`<span class="ok">✅ passend</span>`:`<span class="warn">⚠️ größer wählen</span>`;
+      $('shaft-out').innerHTML=`d_req≈<b>${d_req.toFixed(1)} mm</b> · d_emp≈<b>${d_emp}</b> · Lager: <b>${lager(d_emp)}</b><br>`+
+        (Mb?`Biegemoment≈${(Mb/1000).toFixed(1)} Nm<br>`:"")+rate+
+        `<br>σ_v=√((32Mb/πd³)²+3(16T/πd³)²) ⇒ d=(√((32Mb/π)²+3(16T/π)²)/σ_v,zul)^(1/3)`;
+    }
+
+    function renderPassung(){
+      const holeOpts = Object.keys(HOLE_SHIFT).map(x=>`<option ${x==='H'?'selected':''}>${x}</option>`).join('');
+      const shaftOpts = Object.keys(SHAFT_SHIFT).map(x=>`<option ${x==='h'?'selected':''}>${x}</option>`).join('');
+      mount(`
+        <h3>🧷 ISO-Passung (erweitert)</h3>
+        <div class="hint">Lehr-Näherung. Für Fertigung ISO-286-Tabellen verwenden.</div>
+        <div class="grid">
+          <div><label>Nenndurchmesser D [mm]</label><input id="Dfit" type="number" value="20"></div>
+          <div><label>IT Loch</label><select id="IT_hole"><option>5</option><option>6</option><option selected>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
+          <div><label>IT Welle</label><select id="IT_shaft"><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
+          <div><label>Loch-Toleranzfeld</label><select id="Hlett">${holeOpts}</select></div>
+          <div><label>Wellen-Toleranzfeld</label><select id="Slett">${shaftOpts}</select></div>
+        </div>
+        <button class="btn" id="fit-btn">Passung berechnen</button>
+        <div id="fit-out" class="result"></div>
+      `);
+      $('fit-btn').onclick = calcFit;
+    }
+    function calcFit(){
+      const D=+$('Dfit').value, gH=+$('IT_hole').value, gS=+$('IT_shaft').value, LH=$('Hlett').value, LS=$('Slett').value;
+      if(!(D>0)) return $('fit-out').innerHTML="Bitte gültigen Nenndurchmesser.";
+      const IT_H=IT_um(D,gH), IT_S=IT_um(D,gS); if(!IT_H||!IT_S) return $('fit-out').innerHTML="IT nicht unterstützt.";
+      const zH=(HOLE_SHIFT[LH]??0), EI_H=zH*IT_H, ES_H=EI_H+IT_H;
+      let ei_S, es_S;
+      if(LS==='h'){es_S=0; ei_S=-IT_S;}
+      else if(LS==='js'){es_S= IT_S/2; ei_S= -IT_S/2;}
+      else {const zS=(SHAFT_SHIFT[LS]??0); es_S=zS*IT_S; ei_S=es_S-IT_S;}
+      const hole_min=D+EI_H/1000, hole_max=D+ES_H/1000, shaft_min=D+ei_S/1000, shaft_max=D+es_S/1000;
+      const cmin=(hole_min-shaft_max)*1000, cmax=(hole_max-shaft_min)*1000;
+      const typ = cmin>0?`<span class="ok">✅ Spielpassung</span>` : (cmax<0?`<span class="warn">⚠️ Übermaßpassung</span>`:`<span class="warn">⚠️ Übergangspassung</span>`);
+      $('fit-out').innerHTML=
+        `<b>${LH}${gH} / ${LS}${gS}</b> bei D=${D.toFixed(2)} mm<br><br>`+
+        `Loch: EI=${EI_H.toFixed(0)} µm, ES=${ES_H.toFixed(0)} µm → ${hole_min.toFixed(3)}…${hole_max.toFixed(3)} mm<br>`+
+        `Welle: ei=${ei_S.toFixed(0)} µm, es=${es_S.toFixed(0)} µm → ${shaft_min.toFixed(3)}…${shaft_max.toFixed(3)} mm<br><br>`+
+        `Spiel: c_min≈${cmin.toFixed(0)} µm, c_max≈${cmax.toFixed(0)} µm → ${typ}`;
+    }
+
+    function renderKosten(){
+      mount(`
+        <h3>💰 Kosten</h3><div class="hint">Einfache Teilekalkulation.</div>
+        <div class="grid">
+          <div><label>Volumen V [cm³]</label><input id="V" type="number" value="100"></div>
+          <div><label>ρ [g/cm³]</label><input id="ro" type="number" value="7.85"></div>
+          <div><label>Materialpreis [€/kg]</label><input id="cm" type="number" value="2"></div>
+          <div><label>Fertigungszeit [min]</label><input id="t" type="number" value="10"></div>
+          <div><label>Maschinen-€/h</label><input id="ch" type="number" value="60"></div>
+          <div><label>Stückzahl</label><input id="n" type="number" value="10"></div>
+        </div>
+        <button class="btn" id="cost-btn">Berechnen</button>
+        <div id="cost-out" class="result"></div>
+      `);
+      $('cost-btn').onclick = cost;
+    }
+    function cost(){
+      const V=+$('V').value,ro=+$('ro').value,cm=+$('cm').value,t=+$('t').value,ch=+$('ch').value,n=+$('n').value;
+      if([V,ro,cm,t,ch,n].some(v=>!(v>=0))) return $('cost-out').innerHTML="Bitte sinnvolle Werte.";
+      const m=V*ro/1000, Kmat=m*cm, Kfert=(t/60)*ch, Kteil=Kmat+Kfert, Kges=Kteil*n;
+      $('cost-out').innerHTML=`m≈${m.toFixed(3)} kg · K_mat≈${Kmat.toFixed(2)} € · K_fert≈${Kfert.toFixed(2)} €<br>
+      K_teil≈<b>${Kteil.toFixed(2)} €</b> · K_ges≈<b>${Kges.toFixed(2)} €</b>`;
+    }
+
+    function renderWaerme(){
+      mount(`
+        <h3>🔥 Wärme</h3><div class="hint">Einlagige Wand, Konvektion innen/außen.</div>
+        <div class="grid">
+          <div><label>T<sub>i</sub> [°C]</label><input id="Ti" type="number" value="20"></div>
+          <div><label>T<sub>o</sub> [°C]</label><input id="To" type="number" value="0"></div>
+          <div><label>δ [m]</label><input id="del" type="number" value="0.2" step="0.01"></div>
+          <div><label>λ [W/mK]</label><input id="lam" type="number" value="0.2" step="0.01"></div>
+          <div><label>h<sub>i</sub> [W/m²K]</label><input id="hi" type="number" value="8"></div>
+          <div><label>h<sub>o</sub> [W/m²K]</label><input id="ho" type="number" value="20"></div>
+          <div><label>A [m²]</label><input id="A" type="number" value="10"></div>
+        </div>
+        <button class="btn" id="heat-btn">Berechnen</button>
+        <div id="heat-out" class="result"></div>
+      `);
+      $('heat-btn').onclick = heat;
+    }
+    function heat(){
+      const Ti=+$('Ti').value,To=+$('To').value,del=+$('del').value,lam=+$('lam').value,hi=+$('hi').value,ho=+$('ho').value,A=+$('A').value;
+      if([Ti,To,del,lam,hi,ho,A].some(v=>!(v>0))) return $('heat-out').innerHTML="Bitte alle Werte > 0.";
+      const Rsi=1/hi,Rse=1/ho,Rw=del/lam,R=Rsi+Rw+Rse,U=1/R,Q=U*A*(Ti-To);
+      $('heat-out').innerHTML=`U≈<b>${U.toFixed(3)} W/m²K</b> · Q≈<b>${Q.toFixed(1)} W</b><br>Formeln: R=1/h; R_w=δ/λ; U=1/ΣR; Q=U·A·ΔT`;
+    }
+
+    /* Navigation */
+    function attachNav(){
+      document.querySelectorAll('nav button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          const m=btn.dataset.module;
+          if(m==='schraube') renderSchrauben();
+          else if(m==='balken') renderBalken();
+          else if(m==='werkstoff') renderWerkstoff();
+          else if(m==='welle') renderWelle();
+          else if(m==='passung') renderPassung();
+          else if(m==='kosten') renderKosten();
+          else if(m==='waerme') renderWaerme();
+        });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+      attachNav();
+      renderSchrauben(); // Startmodul
+    });
+  })();
+  </script>
 </body>
 </html>
