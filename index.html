@@ -5,1024 +5,317 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Engineering Toolkit</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --accent: #38bdf8;
-      --border-soft: #1f2937;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --danger: #f97316;
-      --ok: #22c55e;
-      --radius: 14px;
-      --shadow: 0 16px 40px rgba(15,23,42,0.55);
-      --font: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: var(--font);
-      background: radial-gradient(circle at top, #111827 0, #020817 55%, #000 100%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      padding: 18px 26px 14px;
-      border-bottom: 1px solid rgba(148,163,253,0.08);
-      background:
-        radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent),
-        radial-gradient(circle at top right, rgba(79,70,229,0.16), transparent),
-        rgba(2,6,23,0.96);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    header h1 span.logo-pill {
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,253,0.35);
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-    }
-
-    header .sub {
-      margin-top: 4px;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .shell {
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      max-width: 1180px;
-      margin: 0 auto 24px;
-      gap: 10px;
-    }
-
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 8px;
-      border-radius: 999px;
-      background: radial-gradient(circle at top, rgba(15,23,42,0.96), rgba(2,6,23,1));
-      border: 1px solid rgba(148,163,253,0.16);
-      box-shadow: 0 14px 40px rgba(15,23,42,0.65);
-      align-items: center;
-    }
-
-    nav button {
-      padding: 6px 11px;
-      cursor: pointer;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.8rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.18s ease;
-    }
-
-    nav button span.icon { font-size: 0.9rem; }
-
-    nav button:hover {
-      color: var(--accent);
-      border-color: rgba(56,189,248,0.35);
-      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(2,6,23,1));
-    }
-
-    nav button.active {
-      background: linear-gradient(to right, rgba(56,189,248,0.16), rgba(79,70,229,0.22));
-      color: var(--text);
-      border-color: rgba(129,140,248,0.7);
-      box-shadow: 0 6px 16px rgba(15,23,42,0.85);
-    }
-
-    .card {
-      margin-top: 10px;
-      padding: 18px 18px 16px;
-      border-radius: var(--radius);
-      background:
-        radial-gradient(circle at top left, rgba(56,189,248,0.06), transparent),
-        radial-gradient(circle at top right, rgba(79,70,229,0.06), transparent),
-        rgba(6,9,20,0.98);
-      border: 1px solid rgba(75,85,99,0.6);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      min-height: 180px;
-    }
-
-    h3 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 500; color: #e5e7ff; }
-    .hint { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 10px 16px;
-      margin-top: 4px;
-    }
-
-    .field { margin-bottom: 4px; }
-
-    label {
-      display: block;
-      font-size: 0.74rem;
-      margin-bottom: 2px;
-      color: var(--muted);
-    }
-
-    input, select {
-      padding: 6px 7px;
-      width: 100%;
-      border-radius: 7px;
-      border: 1px solid rgba(75,85,99,0.9);
-      background: rgba(9,9,18,0.98);
-      color: var(--text);
-      font-size: 0.8rem;
-      outline: none;
-      transition: all 0.16s ease;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(56,189,248,0.25);
-      background: #020817;
-    }
-
-    .btn-primary {
-      margin-top: 8px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(to right, var(--accent), #6366f1);
-      color: #0b1020;
-      font-weight: 600;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.9);
-      transition: all 0.18s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 36px rgba(15,23,42,0.95);
-    }
-
-    .result {
-      margin-top: 10px;
-      padding: 9px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(75,85,99,0.9);
-      background: radial-gradient(circle at top, rgba(15,23,42,1), rgba(1,4,12,1));
-      font-size: 0.8rem;
-      color: var(--text);
-      line-height: 1.5;
-      white-space: normal;
-      overflow-x: auto;
-    }
-
-    .pill-ok { color: var(--ok); font-weight: 500; }
-    .pill-warn { color: var(--danger); font-weight: 500; }
-    .pill-note { color: var(--muted); font-size: 0.72rem; }
-
-    table {
-      border-collapse: collapse;
-      margin-top: 8px;
-      width: 100%;
-      font-size: 0.75rem;
-    }
-    th, td {
-      border: 1px solid rgba(75,85,99,0.9);
-      padding: 4px 6px;
-      text-align: left;
-      white-space: nowrap;
-    }
-    th {
-      background: rgba(15,23,42,0.96);
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    @media (max-width: 700px) {
-      header { padding: 14px 14px 10px; }
-      .shell { padding: 10px; }
-      .card { padding: 14px; }
-      nav { border-radius: 14px; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Engineering Toolkit</title>
+<style>
+  :root{
+    --bg:#0f172a;--accent:#38bdf8;--text:#e5e7eb;--muted:#9ca3af;--ok:#22c55e;--warn:#f97316;
+    --radius:16px;--shadow:0 16px 40px rgba(15,23,42,.55)
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#020817;color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       font-size:clamp(15px,2.2vw,18px);line-height:1.4}
+  header{position:sticky;top:0;z-index:10;padding:14px 18px;border-bottom:1px solid rgba(148,163,253,.12);
+          background:radial-gradient(1000px 250px at top left,rgba(56,189,248,.12),transparent),
+                     radial-gradient(1000px 250px at top right,rgba(79,70,229,.16),transparent),
+                     rgba(2,6,23,.96);backdrop-filter:blur(10px)}
+  .hero{display:flex;align-items:center;gap:12px}
+  .logo{height:40px;width:40px;border-radius:10px;background:linear-gradient(135deg,#38bdf8,#6366f1)}
+  h1{margin:0;font-weight:650;font-size:clamp(18px,4.5vw,24px)}
+  .sub{color:var(--muted);font-size:.92em;margin-top:2px}
+  .shell{max-width:1100px;margin:10px auto 24px;padding:0 12px}
+  nav{display:flex;gap:8px;overflow:auto;padding:8px;border-radius:999px;border:1px solid rgba(148,163,253,.16);
+      background:linear-gradient(180deg,#0b1222,#050a17)}
+  nav button{flex:0 0 auto;padding:10px 14px;border-radius:999px;border:1px solid rgba(148,163,253,.12);
+      background:#0b1222;color:var(--muted);cursor:pointer;font-size:.95em}
+  nav button.active,nav button:hover{color:#fff;border-color:rgba(99,102,241,.6);
+      background:linear-gradient(90deg,rgba(56,189,248,.2),rgba(99,102,241,.24))}
+  .card{margin-top:12px;padding:16px;border-radius:var(--radius);
+        background:linear-gradient(180deg,rgba(15,23,42,.6),rgba(6,10,22,.9));
+        border:1px solid rgba(75,85,99,.55);box-shadow:var(--shadow)}
+  h3{margin:0 0 6px 0;font-size:1.1em}
+  .hint{color:var(--muted);font-size:.95em;margin-bottom:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  label{display:block;color:var(--muted);font-size:.9em;margin-bottom:4px}
+  input,select{width:100%;padding:12px 12px;border-radius:12px;border:1px solid rgba(75,85,99,.9);background:#0b0f1d;
+               color:var(--text);font-size:1em;min-height:44px}
+  input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(56,189,248,.25)}
+  .btn{margin-top:8px;padding:12px 18px;border-radius:999px;border:none;cursor:pointer;font-weight:650;
+       background:linear-gradient(90deg,#38bdf8,#6366f1);color:#07101f;min-height:48px;font-size:1em}
+  .result{margin-top:12px;padding:12px;border-radius:12px;border:1px solid rgba(75,85,99,.8);background:#0a0f1d;font-size:.98em}
+  .ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92em}
+  th,td{border:1px solid rgba(75,85,99,.8);padding:6px 8px;white-space:nowrap}
+  th{background:rgba(15,23,42,.96);color:var(--muted);font-weight:600}
+  @media (max-width:550px){
+    nav{gap:6px} nav button{padding:10px 12px} .grid{gap:10px}
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>
-      <span class="logo-pill">ENG KIT</span>
-      Engineering Toolkit
-    </h1>
-    <div class="sub">
-      Kompakte technische Rechner für Studium & Praxis – mit sichtbaren Formeln und Erklärungen.
-    </div>
-  </header>
-
-  <div class="shell">
-    <nav>
-      <button data-module="schraube" class="active"><span class="icon">🔩</span>Schrauben</button>
-      <button data-module="balken"><span class="icon">📐</span>Biegung &amp; Torsion</button>
-      <button data-module="werkstoff"><span class="icon">🧱</span>Werkstoffe</button>
-      <button data-module="welle"><span class="icon">⚙️</span>Welle &amp; Lager</button>
-      <button data-module="passung"><span class="icon">🧷</span>ISO-Passung</button>
-      <button data-module="kosten"><span class="icon">💰</span>Kosten</button>
-      <button data-module="waerme"><span class="icon">🔥</span>Wärme</button>
-    </nav>
-
-    <div class="card">
-      <div id="module-container"></div>
+<header>
+  <div class="hero">
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <h1>Engineering Toolkit</h1>
+      <div class="sub">Interaktive Rechner – mobil optimiert • Formeln sichtbar</div>
     </div>
   </div>
-
-  <script>
-    const moduleContainer = document.getElementById('module-container');
-
-    // ==========================================================
-    // 🔩 SCHRAUBENRECHNER (erweitert)
-    // ==========================================================
-    const SCREW_AS = {
-      3: 5.03, 4: 8.78, 5: 14.2, 6: 20.1, 8: 36.6,
-      10: 58.0, 12: 84.3, 16: 157, 20: 245, 24: 353
-    };
-
-    const STRENGTH_CLASSES = {
-      "4.6": { Rm: 400 },
-      "5.8": { Rm: 500 },
-      "8.8": { Rm: 800 },
-      "10.9": { Rm: 1000 },
-      "12.9": { Rm: 1200 }
-    };
-
-    function renderSchraubenrechner() {
-      const sizeOptions = Object.keys(SCREW_AS)
-        .map(d => `<option value="${d}">M${d}</option>`).join("");
-      const classOptions = Object.keys(STRENGTH_CLASSES)
-        .map(k => `<option value="${k}">${k}</option>`).join("");
-
-      moduleContainer.innerHTML = `
-        <h3>🔩 Schraubenrechner</h3>
-        <div class="hint">
-          Vorspannkraft aus Anziehdrehmoment nach einfacher Ingenieur-Näherung.
-          Gut als Lern- und Vorabschätzungstool.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>Schraubengröße</label>
-            <select id="d_nom">${sizeOptions}</select>
-          </div>
-          <div class="field">
-            <label>Festigkeitsklasse</label>
-            <select id="klasse">${classOptions}</select>
-          </div>
-          <div class="field">
-            <label>Anziehdrehmoment T [Nm]</label>
-            <input id="torque" type="number" value="40" />
-          </div>
-          <div class="field">
-            <label>Reibkennwert K (typisch 0.18–0.25)</label>
-            <input id="K_fric" type="number" value="0.20" step="0.01" />
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcBolt()">Berechnen</button>
-        <div id="bolt-result" class="result"></div>
-      `;
-    }
-
-    function calcBolt() {
-      const d = parseFloat(document.getElementById('d_nom').value);
-      const klasse = document.getElementById('klasse').value;
-      const T_Nm = parseFloat(document.getElementById('torque').value);
-      const K = parseFloat(document.getElementById('K_fric').value);
-
-      if (isNaN(d) || isNaN(T_Nm) || isNaN(K) || K <= 0) {
-        document.getElementById('bolt-result').innerHTML = "Bitte gültige Werte eingeben.";
-        return;
-      }
-
-      const As = SCREW_AS[d] || 0.6 * (Math.PI * d * d / 4);
-      const Rm = (STRENGTH_CLASSES[klasse] || {Rm:800}).Rm;
-
-      const T_Nmm = T_Nm * 1000;
-      const Fv = T_Nmm / (K * d);          // [N]
-      const Fzul = 0.7 * Rm * As;          // [N]
-      const S = Fzul / Fv;
-
-      let state;
-      if (S < 1) state = `<span class="pill-warn">⚠️ Überlastgefahr (S &lt; 1).</span>`;
-      else if (S < 1.5) state = `<span class="pill-warn">⚠️ Hohe Auslastung – in der Praxis genau prüfen.</span>`;
-      else state = `<span class="pill-ok">✅ Aus dieser Näherung heraus im sicheren Bereich.</span>`;
-
-      document.getElementById('bolt-result').innerHTML = `
-        <b>Eingaben:</b> M${d}, Klasse ${klasse}, T = ${T_Nm.toFixed(1)} Nm, K = ${K.toFixed(2)}<br>
-        Spannungsquerschnitt As ≈ ${As.toFixed(1)} mm²<br><br>
-        Vorspannkraft Fv ≈ <b>${Fv.toFixed(0)} N</b><br>
-        zul. Vorspannkraft Fzul ≈ <b>${Fzul.toFixed(0)} N</b><br>
-        Sicherheitsfaktor S ≈ <b>${S.toFixed(2)}</b><br>
-        ${state}<br><br>
-        <b>Formeln:</b><br>
-        Fv = T / (K · d)  (T in Nmm, d in mm)<br>
-        Fzul = 0.7 · Rm · As<br>
-        S = Fzul / Fv<br><br>
-        <span class="pill-note">Näherung für Schulung/Vordimensionierung. Für reale Projekte Normen & Herstellerangaben verwenden.</span>
-      `;
-    }
-
-    // ==========================================================
-    // 📐 BIEGUNG & TORSION – mehrere Fälle + von Mises
-    // ==========================================================
-    function renderBalken() {
-      moduleContainer.innerHTML = `
-        <h3>📐 Biegung &amp; Torsion</h3>
-        <div class="hint">
-          Vollrundquerschnitt, mehrere Standardfälle. Alle Rechnungen in mm/N.
-          Optional: Torsionsmoment → Vergleichsspannung nach von Mises.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>Belastungsfall</label>
-            <select id="beamCase" onchange="updateBeamLoadLabel()">
-              <option value="ss_point">Einfach gelagert, Einzellast in der Mitte</option>
-              <option value="ss_udl">Einfach gelagert, Gleichlast q</option>
-              <option value="cant_point">Kragarm, Endlast</option>
-              <option value="cant_udl">Kragarm, Gleichlast q</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Länge L [m]</label>
-            <input id="L" type="number" step="0.1" value="1.0" />
-          </div>
-          <div class="field">
-            <label id="load-label">F [N] (Einzellast)</label>
-            <input id="F" type="number" step="10" value="100" />
-          </div>
-          <div class="field">
-            <label>Durchmesser d [mm]</label>
-            <input id="d_b" type="number" step="1" value="20" />
-          </div>
-          <div class="field">
-            <label>E-Modul [N/mm²]</label>
-            <input id="E" type="number" value="210000" />
-          </div>
-          <div class="field">
-            <label>Torsionsmoment T [Nm] (optional)</label>
-            <input id="T_tors" type="number" step="10" value="0" />
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcBeam()">Berechnen</button>
-        <div id="beam-result" class="result"></div>
-      `;
-    }
-
-    function updateBeamLoadLabel() {
-      const c = document.getElementById('beamCase').value;
-      const lbl = document.getElementById('load-label');
-      if (c === 'ss_point' || c === 'cant_point') {
-        lbl.textContent = 'F [N] (Einzellast)';
-      } else {
-        lbl.textContent = 'q [N/m] (gleichmäßig verteilte Last)';
-      }
-    }
-
-    function calcBeam() {
-      const L_m = parseFloat(document.getElementById('L').value);
-      const F_or_q = parseFloat(document.getElementById('F').value);
-      const d = parseFloat(document.getElementById('d_b').value);
-      const E = parseFloat(document.getElementById('E').value);
-      const T_Nm = parseFloat(document.getElementById('T_tors').value) || 0;
-      const beamCase = document.getElementById('beamCase').value;
-
-      if ([L_m, F_or_q, d, E].some(v => isNaN(v) || v <= 0)) {
-        document.getElementById('beam-result').innerHTML = "Bitte alle Werte > 0 eingeben.";
-        return;
-      }
-
-      const L_mm = L_m * 1000;
-      const I = Math.PI * Math.pow(d, 4) / 64;   // mm^4
-      const Wb = Math.PI * Math.pow(d, 3) / 32;  // mm^3
-      const Wt = Math.PI * Math.pow(d, 3) / 16;  // mm^3
-
-      let M_max_Nmm = 0;
-      let sigma_b = 0;
-      let f_mm = 0;
-      let caseText = "";
-      let formulaText = "";
-
-      if (beamCase === 'ss_point') {
-        const F = F_or_q;
-        M_max_Nmm = F * L_mm / 4;
-        sigma_b = M_max_Nmm / Wb;
-        f_mm = F * Math.pow(L_mm, 3) / (48 * E * I);
-        caseText = "Einfach gelagert, Einzellast in der Mitte.";
-        formulaText = "M_max = F·L/4;  σ_b = M_max/W_b;  f_max = F·L³/(48·E·I)";
-      } else if (beamCase === 'ss_udl') {
-        const q = F_or_q; // N/m
-        const q_mm = q / 1000; // N/mm
-        M_max_Nmm = q_mm * L_mm * L_mm / 8;
-        sigma_b = M_max_Nmm / Wb;
-        f_mm = 5 * q_mm * Math.pow(L_mm, 4) / (384 * E * I);
-        caseText = "Einfach gelagert, gleichmäßig verteilte Last.";
-        formulaText = "M_max = q·L²/8;  σ_b = M_max/W_b;  f_max = 5·q·L⁴/(384·E·I)";
-      } else if (beamCase === 'cant_point') {
-        const F = F_or_q;
-        M_max_Nmm = F * L_mm;
-        sigma_b = M_max_Nmm / Wb;
-        f_mm = F * Math.pow(L_mm, 3) / (3 * E * I);
-        caseText = "Kragarm, Endlast.";
-        formulaText = "M_max = F·L;  σ_b = M_max/W_b;  f_max = F·L³/(3·E·I)";
-      } else if (beamCase === 'cant_udl') {
-        const q = F_or_q;
-        const q_mm = q / 1000;
-        M_max_Nmm = q_mm * L_mm * L_mm / 2;
-        sigma_b = M_max_Nmm / Wb;
-        f_mm = q_mm * Math.pow(L_mm, 4) / (8 * E * I);
-        caseText = "Kragarm, gleichmäßig verteilte Last.";
-        formulaText = "M_max = q·L²/2;  σ_b = M_max/W_b;  f_max = q·L⁴/(8·E·I)";
-      }
-
-      outputBeam(M_max_Nmm, sigma_b, f_mm, T_Nm, Wt, caseText, formulaText);
-    }
-
-    function outputBeam(M_max_Nmm, sigma_b, f_mm, T_Nm, Wt, caseText, formulaText) {
-      const M_max_Nm = M_max_Nmm / 1000;
-
-      let tau_t = 0;
-      if (T_Nm && T_Nm !== 0) {
-        const T_Nmm = T_Nm * 1000;
-        tau_t = T_Nmm / Wt;
-      }
-
-      const sigma_v = Math.sqrt(sigma_b * sigma_b + 3 * tau_t * tau_t);
-
-      let rating;
-      if (sigma_v > 250) rating = `<span class="pill-warn">⚠️ Hohe Vergleichsspannung – Querschnitt vermutlich zu klein.</span>`;
-      else if (sigma_v > 150) rating = `<span class="pill-warn">⚠️ Mittlere bis hohe Auslastung – genauer prüfen.</span>`;
-      else rating = `<span class="pill-ok">✅ Geringe bis moderate Auslastung (für Baustahl, Näherung).</span>`;
-
-      document.getElementById('beam-result').innerHTML = `
-        ${caseText}<br><br>
-        M_max ≈ ${M_max_Nm.toFixed(2)} Nm<br>
-        σ_b,max ≈ ${sigma_b.toFixed(1)} N/mm²<br>
-        f_max ≈ ${f_mm.toFixed(2)} mm<br>
-        ${T_Nm ? `τ_t,max ≈ ${tau_t.toFixed(1)} N/mm²<br>` : ""}
-        ${T_Nm ? `σ_v (von Mises) ≈ ${sigma_v.toFixed(1)} N/mm²<br>` : ""}
-        ${rating}<br><br>
-        <b>Formeln (Vollrund, linear-elastisch):</b><br>
-        W_b = π·d³/32;  W_t = π·d³/16<br>
-        σ_b = M_max / W_b;  τ_t = T / W_t;<br>
-        σ_v = √(σ_b² + 3·τ_t²)<br>
-        ${formulaText}<br><br>
-        <span class="pill-note">Nur Standardfälle. Für komplexe Systeme (mehrere Lasten/Lager) vollständige Festigkeitslehre anwenden.</span>
-      `;
-    }
-
-    // ==========================================================
-    // 🧱 WERKSTOFFVERGLEICH – erweitert
-    // ==========================================================
-    const MATERIALS = [
-      {
-        name: "S235JR (Baustahl)",
-        Rm: 360, Re: 235, rho: 7850, E: 210000,
-        korrosion: "rostet ohne Schutz",
-        kosten: 1,
-        weld: "sehr gut",
-        mach: "gut",
-        apps: "Stahlbau, Träger, einfache Maschinenteile"
-      },
-      {
-        name: "C45E (Vergütungsstahl)",
-        Rm: 700, Re: 430, rho: 7850, E: 210000,
-        korrosion: "rostet",
-        kosten: 2,
-        weld: "eingeschränkt",
-        mach: "gut",
-        apps: "Wellen, Bolzen, Kurbelhebel"
-      },
-      {
-        name: "42CrMo4 (hochfest)",
-        Rm: 900, Re: 650, rho: 7850, E: 210000,
-        korrosion: "rostet",
-        kosten: 3,
-        weld: "bedingt",
-        mach: "mittel",
-        apps: "Zahnräder, hochbelastete Wellen"
-      },
-      {
-        name: "AlMg3 (Al-Legierung)",
-        Rm: 300, Re: 200, rho: 2700, E: 70000,
-        korrosion: "gut",
-        kosten: 2,
-        weld: "gut",
-        mach: "sehr gut",
-        apps: "Leichtbau, Gehäuse, Fahrzeugteile"
-      },
-      {
-        name: "1.4301 (V2A, CrNi-Stahl)",
-        Rm: 600, Re: 230, rho: 8000, E: 200000,
-        korrosion: "sehr gut",
-        kosten: 4,
-        weld: "gut",
-        mach: "zäh",
-        apps: "Lebensmittel, Chemie, Außeneinsatz"
-      }
-    ];
-
-    function renderWerkstoffvergleich() {
-      const options = MATERIALS.map((m, i) => `<option value="${i}">${m.name}</option>`).join("");
-      moduleContainer.innerHTML = `
-        <h3>🧱 Werkstoffvergleich</h3>
-        <div class="hint">
-          Vergleich wichtiger Kennwerte + Kurzkommentar. Ideal als Lernübersicht.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>Werkstoff 1</label>
-            <select id="mat1"><option value="">–</option>${options}</select>
-          </div>
-          <div class="field">
-            <label>Werkstoff 2</label>
-            <select id="mat2"><option value="">–</option>${options}</select>
-          </div>
-          <div class="field">
-            <label>Werkstoff 3</label>
-            <select id="mat3"><option value="">–</option>${options}</select>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcMaterials()">Vergleichen</button>
-        <div id="mat-result" class="result"></div>
-      `;
-    }
-
-    function calcMaterials() {
-      const ids = ["mat1", "mat2", "mat3"]
-        .map(id => document.getElementById(id).value)
-        .filter(v => v !== "");
-
-      if (!ids.length) {
-        document.getElementById('mat-result').innerHTML = "Bitte mindestens einen Werkstoff auswählen.";
-        return;
-      }
-
-      let html = `<table>
-        <tr>
-          <th>Werkstoff</th>
-          <th>Rm</th>
-          <th>Re</th>
-          <th>Dichte</th>
-          <th>E</th>
-          <th>Korrosion</th>
-          <th>Schweißen</th>
-          <th>Zerspanung</th>
-          <th>Typische Anwendungen</th>
-          <th>Kostenfaktor</th>
-        </tr>`;
-
-      ids.forEach(v => {
-        const m = MATERIALS[parseInt(v)];
-        html += `
-          <tr>
-            <td>${m.name}</td>
-            <td>${m.Rm} N/mm²</td>
-            <td>${m.Re} N/mm²</td>
-            <td>${m.rho} kg/m³</td>
-            <td>${m.E} N/mm²</td>
-            <td>${m.korrosion}</td>
-            <td>${m.weld}</td>
-            <td>${m.mach}</td>
-            <td>${m.apps}</td>
-            <td>${m.kosten}</td>
-          </tr>`;
-      });
-
-      html += `</table>
-        <br>
-        <b>Werkstofftechnik-Kurzfassung:</b><br>
-        • Unlegierte Baustähle: preiswert, gut schweißbar → Strukturbauteile, aber begrenzte Festigkeit.<br>
-        • Vergütungsstähle (C45, 42CrMo4): durch Wärmebehandlung hohe Festigkeit → Wellen, Getriebeteile.<br>
-        • Al-Legierungen: geringes Gewicht, geringes E → größere Durchbiegung beachten, gut für Leichtbau.<br>
-        • Rostfreie Stähle: hohe Korrosionsbeständigkeit, teurer, zäher in der Bearbeitung.<br><br>
-        <span class="pill-note">Werte gerundet. Für Auslegung immer Datenblätter / Normen heranziehen.</span>
-      `;
-      document.getElementById('mat-result').innerHTML = html;
-    }
-
-    // ==========================================================
-    // ⚙️ WELLE & LAGER – Torsion + Biegung + von Mises
-    // ==========================================================
-    function renderWelle() {
-      moduleContainer.innerHTML = `
-        <h3>⚙️ Welle &amp; Lager</h3>
-        <div class="hint">
-          Vordimensionierung einer Vollwelle aus Torsion und optionalem Biegemoment (z.B. Zahnradkraft).
-          Nutzt Vergleichsspannung nach von Mises.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>Drehmoment T [Nm]</label>
-            <input id="T_welle" type="number" value="200" />
-          </div>
-          <div class="field">
-            <label>Radialkraft F<sub>t</sub> am Zahnrad [N] (optional)</label>
-            <input id="F_gear" type="number" value="0" />
-          </div>
-          <div class="field">
-            <label>Hebelarm a von Lager zu Zahnrad [m] (optional)</label>
-            <input id="a_gear" type="number" value="0.2" step="0.01" />
-          </div>
-          <div class="field">
-            <label>zul. Vergleichsspannung σ<sub>v,zul</sub> [N/mm²]</label>
-            <input id="sigma_v_zul" type="number" value="120" />
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcShaft()">Berechnen</button>
-        <div id="shaft-result" class="result"></div>
-      `;
-    }
-
-    function calcShaft() {
-      const T_Nm = parseFloat(document.getElementById('T_welle').value);
-      const F_gear = parseFloat(document.getElementById('F_gear').value) || 0;
-      const a_gear_m = parseFloat(document.getElementById('a_gear').value) || 0;
-      const sigma_v_zul = parseFloat(document.getElementById('sigma_v_zul').value);
-
-      if (isNaN(T_Nm) || T_Nm <= 0 || isNaN(sigma_v_zul) || sigma_v_zul <= 0) {
-        document.getElementById('shaft-result').innerHTML = "Bitte mindestens T und σ_v,zul sinnvoll eingeben.";
-        return;
-      }
-
-      const T_Nmm = T_Nm * 1000;
-      const M_b_Nmm = (F_gear > 0 && a_gear_m > 0) ? F_gear * a_gear_m * 1000 : 0;
-
-      // Koeffizient für Vergleichsspannung:
-      // σ_b = 32 M_b / (π d³), τ_t = 16 T / (π d³)
-      // σ_v = sqrt(σ_b² + 3 τ_t²) = (1/d³) * sqrt( (32 M_b/π)² + 3 (16 T/π)² )
-      const C = Math.sqrt(
-        Math.pow(32 * M_b_Nmm / Math.PI, 2) +
-        3 * Math.pow(16 * T_Nmm / Math.PI, 2)
-      );
-
-      const d_vm = Math.cbrt(C / sigma_v_zul); // [mm]
-
-      // nur Torsion zum Vergleich:
-      const d_torsion = Math.cbrt((16 * T_Nmm) / (Math.PI * (0.6 * sigma_v_zul)));
-
-      // Normdurchmesser runden
-      const pref = [15, 17, 20, 25, 30, 35, 40, 45, 50];
-      let d_empf = d_vm;
-      for (let p of pref) {
-        if (d_vm <= p) { d_empf = p; break; }
-      }
-      if (d_empf < d_vm) d_empf = d_vm;
-
-      let rating;
-      const ausl = d_vm / d_empf;
-      if (ausl < 0.6) rating = `<span class="pill-ok">✅ Deutlich auf der sicheren Seite.</span>`;
-      else if (ausl < 0.9) rating = `<span class="pill-ok">✅ Sinnvoll ausgelastet.</span>`;
-      else rating = `<span class="pill-warn">⚠️ Sehr hohe Auslastung – nächstgrößeren Durchmesser wählen.</span>`;
-
-      const lager = (d) => {
-        if (d <= 20) return "z.B. 6204 / 6205";
-        if (d <= 25) return "z.B. 6205";
-        if (d <= 30) return "z.B. 6206";
-        if (d <= 35) return "z.B. 6207";
-        if (d <= 40) return "z.B. 6208";
-        if (d <= 50) return "z.B. 6210";
-        return "entsprechende Rillenkugellager-Reihe nach DIN wählen";
-      };
-
-      document.getElementById('shaft-result').innerHTML = `
-        Eingaben: T = ${T_Nm.toFixed(1)} Nm,
-        ${M_b_Nmm ? `M_b ≈ ${(M_b_Nmm/1000).toFixed(1)} Nm (aus F_t & a)` : "kein Biegemoment angegeben"}<br><br>
-        Erforderlicher Durchmesser aus σ_v (Torsion + Biegung):<br>
-        d_req ≈ <b>${d_vm.toFixed(1)} mm</b><br>
-        Nur aus Torsion (Vergleich): d_Torsion ≈ ${d_torsion.toFixed(1)} mm<br>
-        Empfohlener Normdurchmesser: <b>${d_empf.toFixed(0)} mm</b><br>
-        Lager-Vorschlag: <b>${lager(d_empf)}</b><br><br>
-        ${rating}<br><br>
-        <b>Formelgrundlage:</b><br>
-        σ_b = 32·M_b / (π·d³);  τ_t = 16·T / (π·d³)<br>
-        σ_v = √(σ_b² + 3·τ_t²) → d = ( √((32M_b/π)² + 3(16T/π)²) / σ_v,zul )^(1/3)<br><br>
-        <span class="pill-note">
-          Vereinfachte Gerade-Welle ohne Kerben, Stufen, Freistiche, Kerbwirkungszahlen, Dauerfestigkeit.
-          Für echte Getriebeauslegung bitte vollständige Nachweise führen.
-        </span>
-      `;
-    }
-
-    // ==========================================================
-    // 🧷 ISO-PASSUNG – H/h (sauber)
-    // ==========================================================
-    function renderPassung() {
-      moduleContainer.innerHTML = `
-        <h3>🧷 ISO-Passung (H/h)</h3>
-        <div class="hint">
-          Loch-Basis-System H/h mit vereinfachter IT-Berechnung.
-          Zeigt Abmaße, Spiel und Passungsart. Bewusst auf H/h begrenzt, damit es fachlich sauber bleibt.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>Nenndurchmesser D [mm]</label>
-            <input id="D_fit" type="number" value="20" />
-          </div>
-          <div class="field">
-            <label>Loch-Toleranz</label>
-            <select id="holeTol">
-              <option value="H5">H5</option>
-              <option value="H6">H6</option>
-              <option value="H7" selected>H7</option>
-              <option value="H8">H8</option>
-              <option value="H9">H9</option>
-              <option value="H10">H10</option>
-              <option value="H11">H11</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Wellen-Toleranz</label>
-            <select id="shaftTol">
-              <option value="h5">h5</option>
-              <option value="h6" selected>h6</option>
-              <option value="h7">h7</option>
-              <option value="h8">h8</option>
-              <option value="h9">h9</option>
-              <option value="h10">h10</option>
-              <option value="h11">h11</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcFit()">Passung berechnen</button>
-        <div id="fit-result" class="result"></div>
-      `;
-    }
-
-    function getITmicrons(D, grade) {
-      const i = 0.45 * Math.cbrt(D) + 0.001 * D; // µm
-      const k = { 5:7, 6:10, 7:16, 8:25, 9:40, 10:64, 11:100 }[grade];
-      if (!k) return null;
-      return k * i;
-    }
-
-    function parseTol(str) {
-      return { letter: str.charAt(0), grade: parseInt(str.slice(1), 10) };
-    }
-
-    function calcFit() {
-      const D = parseFloat(document.getElementById('D_fit').value);
-      const holeStr = document.getElementById('holeTol').value;
-      const shaftStr = document.getElementById('shaftTol').value;
-
-      if (isNaN(D) || D <= 0) {
-        document.getElementById('fit-result').innerHTML = "Bitte gültigen Nenndurchmesser eingeben.";
-        return;
-      }
-
-      const hole = parseTol(holeStr);
-      const shaft = parseTol(shaftStr);
-      const IT_hole = getITmicrons(D, hole.grade);
-      const IT_shaft = getITmicrons(D, shaft.grade);
-
-      if (!IT_hole || !IT_shaft) {
-        document.getElementById('fit-result').innerHTML = "Dieser IT-Grad ist in dieser Demo nicht implementiert.";
-        return;
-      }
-
-      if (hole.letter !== 'H' || shaft.letter !== 'h') {
-        document.getElementById('fit-result').innerHTML =
-          "Diese Version unterstützt bewusst nur H/h-Kombinationen. Erweiterung auf R/S/U etc. wäre der nächste Norm-Schritt.";
-        return;
-      }
-
-      const EI_H = 0;
-      const ES_H = IT_hole;
-      const es_h = 0;
-      const ei_h = -IT_shaft;
-
-      const hole_min = D + EI_H / 1000;
-      const hole_max = D + ES_H / 1000;
-      const shaft_min = D + ei_h / 1000;
-      const shaft_max = D + es_h / 1000;
-
-      const c_min = (hole_min - shaft_max) * 1000;
-      const c_max = (hole_max - shaft_min) * 1000;
-
-      let typeText;
-      if (c_min > 0) typeText = `<span class="pill-ok">✅ Spielpassung</span>`;
-      else if (c_max < 0) typeText = `<span class="pill-warn">⚠️ Übermaßpassung</span>`;
-      else typeText = `<span class="pill-warn">⚠️ Übergangspassung</span>`;
-
-      document.getElementById('fit-result').innerHTML = `
-        <b>${holeStr} / ${shaftStr}</b> bei D = ${D.toFixed(2)} mm<br><br>
-        Loch: EI = 0 µm, ES ≈ +${ES_H.toFixed(0)} µm → ${hole_min.toFixed(3)} … ${hole_max.toFixed(3)} mm<br>
-        Welle: ei ≈ ${ei_h.toFixed(0)} µm, es = 0 µm → ${shaft_min.toFixed(3)} … ${shaft_max.toFixed(3)} mm<br><br>
-        Spiel: c_min ≈ ${c_min.toFixed(0)} µm, c_max ≈ ${c_max.toFixed(0)} µm<br>
-        ${typeText}<br><br>
-        <b>Idee dahinter:</b><br>
-        IT nach i-Formel, H: EI=0, h: es=0; Abmaße = D + Abweichung; Spiel = Loch − Welle.<br>
-        <span class="pill-note">Didaktische Näherung. Für präzise Passungen ISO 286 Tabellen verwenden.</span>
-      `;
-    }
-
-    // ==========================================================
-    // 💰 KOSTEN
-    // ==========================================================
-    function renderKosten() {
-      moduleContainer.innerHTML = `
-        <h3>💰 Kostenkalkulator</h3>
-        <div class="hint">Einfache Material- und Maschinenkostenabschätzung pro Teil.</div>
-        <div class="grid">
-          <div class="field">
-            <label>Bauteilvolumen V [cm³]</label>
-            <input id="V_cm3" type="number" value="100" />
-          </div>
-          <div class="field">
-            <label>ρ [g/cm³]</label>
-            <input id="rho_mat" type="number" value="7.85" />
-          </div>
-          <div class="field">
-            <label>Materialpreis [€/kg]</label>
-            <input id="c_mat" type="number" value="2.0" />
-          </div>
-          <div class="field">
-            <label>Bearbeitungszeit je Teil [min]</label>
-            <input id="t_min" type="number" value="10" />
-          </div>
-          <div class="field">
-            <label>Maschinenstundensatz [€/h]</label>
-            <input id="c_h" type="number" value="60" />
-          </div>
-          <div class="field">
-            <label>Stückzahl</label>
-            <input id="n_stk" type="number" value="10" />
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcCost()">Berechnen</button>
-        <div id="cost-result" class="result"></div>
-      `;
-    }
-
-    function calcCost() {
-      const V = parseFloat(document.getElementById('V_cm3').value);
-      const rho = parseFloat(document.getElementById('rho_mat').value);
-      const c_mat = parseFloat(document.getElementById('c_mat').value);
-      const t_min = parseFloat(document.getElementById('t_min').value);
-      const c_h = parseFloat(document.getElementById('c_h').value);
-      const n = parseFloat(document.getElementById('n_stk').value);
-
-      if ([V,rho,c_mat,t_min,c_h,n].some(v => isNaN(v) || v < 0)) {
-        document.getElementById('cost-result').innerHTML = "Bitte sinnvolle Werte eingeben.";
-        return;
-      }
-
-      const m_kg = V * rho / 1000;
-      const K_mat = m_kg * c_mat;
-      const K_fert = (t_min / 60) * c_h;
-      const K_teil = K_mat + K_fert;
-      const K_ges = K_teil * n;
-
-      document.getElementById('cost-result').innerHTML = `
-        Masse je Teil m ≈ <b>${m_kg.toFixed(3)} kg</b><br>
-        Materialkosten je Teil ≈ <b>${K_mat.toFixed(2)} €</b><br>
-        Fertigungskosten je Teil ≈ <b>${K_fert.toFixed(2)} €</b><br>
-        Gesamtkosten je Teil ≈ <b>${K_teil.toFixed(2)} €</b><br>
-        Gesamtkosten für ${n} Stück ≈ <b>${K_ges.toFixed(2)} €</b><br><br>
-        <b>Formeln:</b><br>
-        m = V·ρ / 1000<br>
-        K_mat = m·c_mat;  K_fert = (t_min/60)·c_h<br>
-        K_teil = K_mat + K_fert;  K_ges = K_teil·n<br>
-      `;
-    }
-
-    // ==========================================================
-    // 🔥 WÄRMEÜBERTRAGUNG
-    // ==========================================================
-    function renderWaerme() {
-      moduleContainer.innerHTML = `
-        <h3>🔥 Wärmeübertragung</h3>
-        <div class="hint">
-          Einlagige Wand mit Konvektion innen/außen. U-Wert und stationärer Wärmestrom.
-        </div>
-        <div class="grid">
-          <div class="field">
-            <label>T<sub>i</sub> innen [°C]</label>
-            <input id="Ti" type="number" value="20" />
-          </div>
-          <div class="field">
-            <label>T<sub>o</sub> außen [°C]</label>
-            <input id="To" type="number" value="0" />
-          </div>
-          <div class="field">
-            <label>Wanddicke δ [m]</label>
-            <input id="delta" type="number" step="0.01" value="0.2" />
-          </div>
-          <div class="field">
-            <label>λ [W/mK]</label>
-            <input id="lambda" type="number" step="0.01" value="0.2" />
-          </div>
-          <div class="field">
-            <label>h<sub>i</sub> innen [W/m²K]</label>
-            <input id="hi" type="number" value="8" />
-          </div>
-          <div class="field">
-            <label>h<sub>o</sub> außen [W/m²K]</label>
-            <input id="ho" type="number" value="20" />
-          </div>
-          <div class="field">
-            <label>Fläche A [m²]</label>
-            <input id="A" type="number" value="10" />
-          </div>
-        </div>
-        <button class="btn-primary" onclick="calcHeat()">Berechnen</button>
-        <div id="heat-result" class="result"></div>
-      `;
-    }
-
-    function calcHeat() {
-      const Ti = parseFloat(document.getElementById('Ti').value);
-      const To = parseFloat(document.getElementById('To').value);
-      const delta = parseFloat(document.getElementById('delta').value);
-      const lambda = parseFloat(document.getElementById('lambda').value);
-      const hi = parseFloat(document.getElementById('hi').value);
-      const ho = parseFloat(document.getElementById('ho').value);
-      const A = parseFloat(document.getElementById('A').value);
-
-      if ([Ti,To,delta,lambda,hi,ho,A].some(v => isNaN(v) || v <= 0)) {
-        document.getElementById('heat-result').innerHTML = "Bitte alle Werte > 0 eingeben.";
-        return;
-      }
-
-      const Rsi = 1 / hi;
-      const Rse = 1 / ho;
-      const Rw = delta / lambda;
-      const Rtot = Rsi + Rw + Rse;
-      const U = 1 / Rtot;
-      const dT = Ti - To;
-      const Q = U * A * dT;
-
-      document.getElementById('heat-result').innerHTML = `
-        U ≈ <b>${U.toFixed(3)} W/m²K</b><br>
-        Q ≈ <b>${Q.toFixed(1)} W</b> bei ΔT = ${dT.toFixed(1)} K<br><br>
-        <b>Formeln:</b><br>
-        R_si = 1/h_i;  R_se = 1/h_o;  R_w = δ/λ<br>
-        R_tot = R_si + R_w + R_se;  U = 1/R_tot<br>
-        Q = U · A · (T_i − T_o)<br>
-      `;
-    }
-
-    // ==========================================================
-    // NAVIGATION
-    // ==========================================================
-    function setActive(btn) {
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mod = btn.dataset.module;
-        setActive(btn);
-        if (mod === 'schraube') renderSchraubenrechner();
-        else if (mod === 'balken') renderBalken();
-        else if (mod === 'werkstoff') renderWerkstoffvergleich();
-        else if (mod === 'welle') renderWelle();
-        else if (mod === 'passung') renderPassung();
-        else if (mod === 'kosten') renderKosten();
-        else if (mod === 'waerme') renderWaerme();
-      });
-    });
-
-    // Startmodul
-    renderSchraubenrechner();
-  </script>
+</header>
+
+<div class="shell">
+  <nav>
+    <button data-module="schraube" class="active">🔩 Schrauben</button>
+    <button data-module="balken">📐 Biegung & Torsion</button>
+    <button data-module="werkstoff">🧱 Werkstoffe</button>
+    <button data-module="welle">⚙️ Welle & Lager</button>
+    <button data-module="passung">🧷 ISO-Passung</button>
+    <button data-module="kosten">💰 Kosten</button>
+    <button data-module="waerme">🔥 Wärme</button>
+  </nav>
+
+  <div class="card"><div id="module-container"></div></div>
+</div>
+
+<script>
+const moduleContainer=document.getElementById('module-container');
+
+/* ----------------- SCHRAUBEN (unverändert sinnvoll) ------------------ */
+const SCREW_AS={3:5.03,4:8.78,5:14.2,6:20.1,8:36.6,10:58.0,12:84.3,16:157,20:245,24:353};
+const STRENGTH={"4.6":400,"5.8":500,"8.8":800,"10.9":1000,"12.9":1200};
+function renderSchrauben(){
+  const sizeOpts=Object.keys(SCREW_AS).map(d=>`<option value="${d}">M${d}</option>`).join('');
+  const clsOpts=Object.keys(STRENGTH).map(k=>`<option>${k}</option>`).join('');
+  moduleContainer.innerHTML=`
+    <h3>🔩 Schraubenrechner</h3>
+    <div class="hint">Vorspannkraft aus Anziehdrehmoment (Lehr-Näherung).</div>
+    <div class="grid">
+      <div><label>Größe</label><select id="d_nom">${sizeOpts}</select></div>
+      <div><label>Festigkeitsklasse</label><select id="klasse">${clsOpts}</select></div>
+      <div><label>Anziehdrehmoment T [Nm]</label><input id="T" type="number" value="40"></div>
+      <div><label>Reibkennwert K</label><input id="K" type="number" value="0.20" step="0.01"></div>
+    </div>
+    <button class="btn" onclick="calcBolt()">Berechnen</button>
+    <div id="bolt-out" class="result"></div>`;
+}
+function calcBolt(){
+  const d=+document.getElementById('d_nom').value, T=+document.getElementById('T').value,
+        K=+document.getElementById('K').value, Rm=STRENGTH[document.getElementById('klasse').value]||800;
+  if(!(d>0&&T>=0&&K>0)) return document.getElementById('bolt-out').innerHTML="Bitte gültige Werte.";
+  const As=SCREW_AS[d]||0.6*(Math.PI*d*d/4), Fv=(T*1000)/(K*d), Fzul=0.7*Rm*As, S=Fzul/Fv;
+  const state=S<1?`<span class="warn">⚠️ Überlast (S&lt;1)</span>`:S<1.5?`<span class="warn">⚠️ Hoch</span>`:`<span class="ok">✅ OK</span>`;
+  document.getElementById('bolt-out').innerHTML=
+    `As≈${As.toFixed(1)} mm²<br>Fv≈<b>${Fv.toFixed(0)} N</b> · Fzul≈<b>${Fzul.toFixed(0)} N</b><br>S≈<b>${S.toFixed(2)}</b> ${state}<br>
+     Formeln: Fv=T/(K·d), Fzul=0.7·Rm·As, S=Fzul/Fv`;
+}
+
+/* ----------------- BALKEN & TORSION (kompakt, mobil ok) --------------- */
+function renderBalken(){
+  moduleContainer.innerHTML=`
+    <h3>📐 Biegung &amp; Torsion</h3>
+    <div class="hint">Vollrund. Wähle Fall, optional Torsion → von Mises.</div>
+    <div class="grid">
+      <div><label>Fall</label>
+        <select id="case" onchange="lbl()">
+          <option value="ss_point">Einfach gelagert · Einzellast Mitte</option>
+          <option value="ss_udl">Einfach gelagert · Gleichlast q</option>
+          <option value="cant_point">Kragarm · Endlast</option>
+          <option value="cant_udl">Kragarm · Gleichlast q</option>
+        </select>
+      </div>
+      <div><label>Länge L [m]</label><input id="L" type="number" value="1" step="0.1"></div>
+      <div><label id="loadlbl">F [N] (Einzellast)</label><input id="F" type="number" value="100" step="10"></div>
+      <div><label>Ø d [mm]</label><input id="d" type="number" value="20"></div>
+      <div><label>E [N/mm²]</label><input id="E" type="number" value="210000"></div>
+      <div><label>Torsion T [Nm] (opt.)</label><input id="Tt" type="number" value="0"></div>
+    </div>
+    <button class="btn" onclick="calcBeam()">Berechnen</button>
+    <div id="beam-out" class="result"></div>`;
+}
+function lbl(){document.getElementById('loadlbl').textContent=(document.getElementById('case').value.includes('udl')?'q [N/m] (Gleichlast)':'F [N] (Einzellast)');}
+function calcBeam(){
+  const Lm=+L.value, Fq=+F.value, dmm=+d.value, E=+E.value, Tnm=+Tt.value||0, c=case.value;
+  if([Lm,Fq,dmm,E].some(v=>!(v>0))) return beam-out.innerHTML="Bitte gültige Werte.";
+  const L= Lm*1000, I=Math.PI*dmm**4/64, Wb=Math.PI*dmm**3/32, Wt=Math.PI*dmm**3/16;
+  let M=0, f=0, txt="";
+  if(c==='ss_point'){M=Fq*L/4; f=Fq*L**3/(48*E*I); txt="Einfach gelagert, Einzellast Mitte";}
+  if(c==='ss_udl'){const q=Fq/1000; M=q*L*L/8; f=5*q*L**4/(384*E*I); txt="Einfach gelagert, Gleichlast";}
+  if(c==='cant_point'){M=Fq*L; f=Fq*L**3/(3*E*I); txt="Kragarm, Endlast";}
+  if(c==='cant_udl'){const q=Fq/1000; M=q*L*L/2; f=q*L**4/(8*E*I); txt="Kragarm, Gleichlast";}
+  const sig_b=M/Wb, tau=Tnm? (Tnm*1000)/Wt : 0, sig_v=Math.sqrt(sig_b**2+3*tau**2);
+  const rate=sig_v>250?`<span class="warn">⚠️ hoch</span>`:sig_v>150?`<span class="warn">⚠️ mittel</span>`:`<span class="ok">✅ niedrig</span>`;
+  beam-out.innerHTML=
+   `${txt}<br>M_max≈${(M/1000).toFixed(2)} Nm · σ_b≈${sig_b.toFixed(1)} N/mm² · f≈${f.toFixed(2)} mm<br>`+
+   (tau?`τ_t≈${tau.toFixed(1)} N/mm² · σ_v≈${sig_v.toFixed(1)} N/mm² ${rate}<br>`:"")+
+   `Formeln: Wb=πd³/32, Wt=πd³/16, σ_b=M/Wb, τ=T/Wt, σ_v=√(σ_b²+3τ²)`;
+}
+
+/* ----------------- WERKSTOFF (wie vorher) ----------------------------- */
+const MATERIALS=[
+ {name:"S235JR",Rm:360,Re:235,rho:7850,E:210000,korrosion:"rostet",weld:"sehr gut",mach:"gut",apps:"Stahlbau",cost:1},
+ {name:"C45E",Rm:700,Re:430,rho:7850,E:210000,korrosion:"rostet",weld:"eingeschränkt",mach:"gut",apps:"Wellen/Bolzen",cost:2},
+ {name:"42CrMo4",Rm:900,Re:650,rho:7850,E:210000,korrosion:"rostet",weld:"bedingt",mach:"mittel",apps:"hochbelastete Teile",cost:3},
+ {name:"AlMg3",Rm:300,Re:200,rho:2700,E:70000,korrosion:"gut",weld:"gut",mach:"sehr gut",apps:"Leichtbau",cost:2},
+ {name:"1.4301",Rm:600,Re:230,rho:8000,E:200000,korrosion:"sehr gut",weld:"gut",mach:"zäh",apps:"Lebensmittel/Chemie",cost:4}
+];
+function renderWerkstoff(){
+  const opts= MATERIALS.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
+  moduleContainer.innerHTML=`
+    <h3>🧱 Werkstoffvergleich</h3><div class="hint">Kennwerte + Kurzkommentar (Lehrzwecke).</div>
+    <div class="grid">
+      <div><label>Werkstoff 1</label><select id="m1"><option value="">–</option>${opts}</select></div>
+      <div><label>Werkstoff 2</label><select id="m2"><option value="">–</option>${opts}</select></div>
+      <div><label>Werkstoff 3</label><select id="m3"><option value="">–</option>${opts}</select></div>
+    </div>
+    <button class="btn" onclick="cmpMat()">Vergleichen</button>
+    <div id="mat-out" class="result"></div>`;
+}
+function cmpMat(){
+  const ids=[m1.value,m2.value,m3.value].filter(v=>v!=="");
+  if(!ids.length) return mat-out.innerHTML="Bitte mindestens einen Werkstoff wählen.";
+  let html=`<table><tr><th>Werkstoff</th><th>Rm</th><th>Re</th><th>ρ</th><th>E</th><th>Korrosion</th><th>Schweißen</th><th>Zerspanung</th><th>Apps</th><th>€</th></tr>`;
+  ids.forEach(v=>{const x=MATERIALS[+v];html+=`<tr><td>${x.name}</td><td>${x.Rm}</td><td>${x.Re}</td><td>${x.rho}</td><td>${x.E}</td><td>${x.korrosion}</td><td>${x.weld}</td><td>${x.mach}</td><td>${x.apps}</td><td>${x.cost}</td></tr>`});
+  html+=`</table><br><span class="hint">Hinweis: gerundete Richtwerte – für Auslegung Datenblätter/Normen verwenden.</span>`;
+  mat-out.innerHTML=html;
+}
+
+/* ----------------- WELLE & LAGER (kompakt) ---------------------------- */
+function renderWelle(){
+  moduleContainer.innerHTML=`
+    <h3>⚙️ Welle &amp; Lager</h3>
+    <div class="hint">Vollwelle, Torsion + optional Biegemoment → von Mises.</div>
+    <div class="grid">
+      <div><label>Drehmoment T [Nm]</label><input id="Tw" type="number" value="200"></div>
+      <div><label>Radialkraft F<sub>t</sub> [N] (opt.)</label><input id="Fz" type="number" value="0"></div>
+      <div><label>Hebelarm a [m] (opt.)</label><input id="az" type="number" value="0.2" step="0.01"></div>
+      <div><label>σ<sub>v,zul</sub> [N/mm²]</label><input id="sv" type="number" value="120"></div>
+    </div>
+    <button class="btn" onclick="calcShaft()">Berechnen</button>
+    <div id="shaft-out" class="result"></div>`;
+}
+function calcShaft(){
+  const T=+Tw.value, F=+Fz.value||0, a=+az.value||0, zul=+sv.value;
+  if(!(T>0&&zul>0)) return shaft-out.innerHTML="Bitte sinnvolle Werte.";
+  const Tmm=T*1000, Mb=(F>0&&a>0)?F*a*1000:0;
+  const C=Math.sqrt((32*Mb/Math.PI)**2+3*(16*Tmm/Math.PI)**2);
+  const d_req=Math.cbrt(C/zul);
+  const prefs=[15,17,20,25,30,35,40,45,50,55,60]; let d_emp=prefs.find(p=>d_req<=p)||Math.ceil(d_req/5)*5;
+  const lager=d=>d<=20?"6204/6205":d<=25?"6205":d<=30?"6206":d<=35?"6207":d<=40?"6208":d<=50?"6210":"DIN-Reihe wählen";
+  const rate=d_req/d_emp<0.6?`<span class="ok">✅ sicher</span>`:d_req/d_emp<0.9?`<span class="ok">✅ passend</span>`:`<span class="warn">⚠️ größer wählen</span>`;
+  shaft-out.innerHTML=
+   `d_req (σ_v)≈<b>${d_req.toFixed(1)} mm</b> · d_emp≈<b>${d_emp}</b> · Lager: <b>${lager(d_emp)}</b><br>`+
+   (Mb?`Biegemoment≈${(Mb/1000).toFixed(1)} Nm<br>`:"")+rate+
+   `<br>Formel: σ_v=√((32Mb/πd³)²+3(16T/πd³)²) ⇒ d=(√((32Mb/π)²+3(16T/π)²)/σ_v,zul)^(1/3)`;
+}
+
+/* ----------------- ISO-PASSUNG (erweitert – Lehrmodell) --------------- */
+/* IT-Breite wie zuvor */
+function IT_um(D,grade){const i=0.45*Math.cbrt(D)+0.001*D;const K={5:7,6:10,7:16,8:25,9:40,10:64,11:100}[grade];return K?K*i:null;}
+/* Zero-line-shift als Vielfaches von IT (vereinfachtes Lehrmodell!) */
+const HOLE_SHIFT={F:-1.0,G:-0.5,H:0,J:0.5,K:1.0,M:2.0,N:2.5,P:3.0,S:4.0,U:5.0};
+const SHAFT_SHIFT={f:-1.0,g:-0.5,h:0,js:0,k:0.5,m:1.0,n:1.5,p:2.5,s:4.0,u:5.0};
+function renderPassung(){
+  moduleContainer.innerHTML=`
+    <h3>🧷 ISO-Passung (erweitert)</h3>
+    <div class="hint">Lehr-Näherung: IT nach i-Formel, Grundabmaße als Vielfache der IT verschoben. Für Fertigung echte ISO-286-Tabellen verwenden.</div>
+    <div class="grid">
+      <div><label>Nenndurchmesser D [mm]</label><input id="Dfit" type="number" value="20"></div>
+      <div><label>IT Loch</label><select id="IT_hole"><option>5</option><option>6</option><option selected>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
+      <div><label>IT Welle</label><select id="IT_shaft"><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
+      <div><label>Loch-Toleranzfeld</label>
+        <select id="Hlett">${Object.keys(HOLE_SHIFT).map(x=>`<option ${x==='H'?'selected':''}>${x}</option>`).join('')}</select></div>
+      <div><label>Wellen-Toleranzfeld</label>
+        <select id="Slett">${Object.keys(SHAFT_SHIFT).map(x=>`<option ${x==='h'?'selected':''}>${x}</option>`).join('')}</select></div>
+    </div>
+    <button class="btn" onclick="calcFit()">Passung berechnen</button>
+    <div id="fit-out" class="result"></div>`;
+}
+function calcFit(){
+  const D=+Dfit.value, gH=+IT_hole.value, gS=+IT_shaft.value, LH=Hlett.value, LS=Slett.value;
+  if(!(D>0)) return fit-out.innerHTML="Bitte gültigen Nenndurchmesser.";
+  const IT_H=IT_um(D,gH), IT_S=IT_um(D,gS); if(!IT_H||!IT_S) return fit-out.innerHTML="IT nicht unterstützt.";
+  /* Loch: EI = shift*IT ; ES = EI + IT */
+  const zH=(HOLE_SHIFT[LH]??0), EI_H=zH*IT_H, ES_H=EI_H+IT_H;
+  /* Welle:
+     h: es=0, ei=-IT;  js: mittig → ei=-IT/2, es=+IT/2;
+     sonst: es = shift*IT, ei = es - IT  */
+  let ei_S, es_S;
+  if(LS==='h'){es_S=0; ei_S=-IT_S;}
+  else if(LS==='js'){es_S= IT_S/2; ei_S= -IT_S/2;}
+  else {const zS=(SHAFT_SHIFT[LS]??0); es_S=zS*IT_S; ei_S=es_S-IT_S;}
+  /* Abmaße in mm */
+  const hole_min=D+EI_H/1000, hole_max=D+ES_H/1000, shaft_min=D+ei_S/1000, shaft_max=D+es_S/1000;
+  const cmin=(hole_min-shaft_max)*1000, cmax=(hole_max-shaft_min)*1000;
+  let typ = cmin>0?`<span class="ok">✅ Spielpassung</span>` : (cmax<0?`<span class="warn">⚠️ Übermaßpassung</span>`:`<span class="warn">⚠️ Übergangspassung</span>`);
+  fit-out.innerHTML=
+   `<b>${LH}${gH} / ${LS}${gS}</b> bei D=${D.toFixed(2)} mm<br><br>`+
+   `Loch: EI=${EI_H.toFixed(0)} µm, ES=${ES_H.toFixed(0)} µm → ${hole_min.toFixed(3)}…${hole_max.toFixed(3)} mm<br>`+
+   `Welle: ei=${ei_S.toFixed(0)} µm, es=${es_S.toFixed(0)} µm → ${shaft_min.toFixed(3)}…${shaft_max.toFixed(3)} mm<br><br>`+
+   `Spiel: c_min≈${cmin.toFixed(0)} µm, c_max≈${cmax.toFixed(0)} µm → ${typ}<br><br>`+
+   `<span class="hint">Lehr-Modell: Zero-Line-Shift in IT-Vielfachen (H=0, f/g unter Null, k/m/n/p/s/u über Null; F/G kleineres Loch, J/K/M/N/P/S/U größeres Loch). Für reale Auslegung ISO-Tabellen verwenden.</span>`;
+}
+
+/* ----------------- KOSTEN & WÄRME (wie zuvor, mobil ok) --------------- */
+function renderKosten(){
+  moduleContainer.innerHTML=`
+    <h3>💰 Kosten</h3><div class="hint">Einfache Teilekalkulation.</div>
+    <div class="grid">
+      <div><label>Volumen V [cm³]</label><input id="V" type="number" value="100"></div>
+      <div><label>ρ [g/cm³]</label><input id="ro" type="number" value="7.85"></div>
+      <div><label>Materialpreis [€/kg]</label><input id="cm" type="number" value="2"></div>
+      <div><label>Fertigungszeit [min]</label><input id="t" type="number" value="10"></div>
+      <div><label>Maschinen-€/h</label><input id="ch" type="number" value="60"></div>
+      <div><label>Stückzahl</label><input id="n" type="number" value="10"></div>
+    </div>
+    <button class="btn" onclick="cost()">Berechnen</button>
+    <div id="cost-out" class="result"></div>`;
+}
+function cost(){
+  const V=+V.value,ro=+ro.value,cm=+cm.value,t=+t.value,ch=+ch.value,n=+n.value;
+  if([V,ro,cm,t,ch,n].some(v=>!(v>=0))) return cost-out.innerHTML="Bitte sinnvolle Werte.";
+  const m=V*ro/1000, Kmat=m*cm, Kfert=(t/60)*ch, Kteil=Kmat+Kfert, Kges=Kteil*n;
+  cost-out.innerHTML=`m≈${m.toFixed(3)} kg · K_mat≈${Kmat.toFixed(2)} € · K_fert≈${Kfert.toFixed(2)} €<br>
+  K_teil≈<b>${Kteil.toFixed(2)} €</b> · K_ges≈<b>${Kges.toFixed(2)} €</b>`;
+}
+function renderWaerme(){
+  moduleContainer.innerHTML=`
+    <h3>🔥 Wärme</h3><div class="hint">Einlagige Wand, Konvektion innen/außen.</div>
+    <div class="grid">
+      <div><label>T<sub>i</sub> [°C]</label><input id="Ti" type="number" value="20"></div>
+      <div><label>T<sub>o</sub> [°C]</label><input id="To" type="number" value="0"></div>
+      <div><label>δ [m]</label><input id="del" type="number" value="0.2" step="0.01"></div>
+      <div><label>λ [W/mK]</label><input id="lam" type="number" value="0.2" step="0.01"></div>
+      <div><label>h<sub>i</sub> [W/m²K]</label><input id="hi" type="number" value="8"></div>
+      <div><label>h<sub>o</sub> [W/m²K]</label><input id="ho" type="number" value="20"></div>
+      <div><label>A [m²]</label><input id="A" type="number" value="10"></div>
+    </div>
+    <button class="btn" onclick="heat()">Berechnen</button>
+    <div id="heat-out" class="result"></div>`;
+}
+function heat(){
+  const Ti=+Ti.value,To=+To.value,del=+del.value,lam=+lam.value,hi=+hi.value,ho=+ho.value,A=+A.value;
+  if([Ti,To,del,lam,hi,ho,A].some(v=>!(v>0))) return heat-out.innerHTML="Bitte alle Werte > 0.";
+  const Rsi=1/hi,Rse=1/ho,Rw=del/lam,R=Rsi+Rw+Rse,U=1/R,Q=U*A*(Ti-To);
+  heat-out.innerHTML=`U≈<b>${U.toFixed(3)} W/m²K</b> · Q≈<b>${Q.toFixed(1)} W</b><br>Formeln: R=1/h; R_w=δ/λ; U=1/ΣR; Q=U·A·ΔT`;
+}
+
+/* ----------------- NAV ------------------ */
+function setActive(btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+document.querySelectorAll('nav button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    setActive(btn);
+    const m=btn.dataset.module;
+    if(m==='schraube') renderSchrauben();
+    else if(m==='balken') renderBalken();
+    else if(m==='werkstoff') renderWerkstoff();
+    else if(m==='welle') renderWelle();
+    else if(m==='passung') renderPassung();
+    else if(m==='kosten') renderKosten();
+    else if(m==='waerme') renderWaerme();
+  })
+});
+renderSchrauben();
+</script>
 </body>
 </html>
-
-
